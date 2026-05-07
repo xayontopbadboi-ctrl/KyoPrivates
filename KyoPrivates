@@ -294,23 +294,32 @@ Tab:AddSwitch("Auto Kill", function(Value)
     end
 end)
 
+local TargetName = "" -- Variable to store the name you type
+local LoopKilling = false
+
+-- 1. Add the TextBox to type the player's name
+Tab:AddTextBox("Target Player Name", function(text)
+    TargetName = text
+end, {["clear"] = false})
+
+-- 2. The TP Kill Toggle
 Tab:AddSwitch("TP Kill Target", function(state)
     LoopKilling = state
     if LoopKilling then
         task.spawn(function()
             local localPlayer = game.Players.LocalPlayer
             while LoopKilling do
+                -- It uses the TargetName variable from the TextBox above
                 local target = game.Players:FindFirstChild(TargetName)
                 
-                -- Check if both you and the target have characters/root parts
                 if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
                    localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     
-                    -- Teleport to the target's position (slightly offset so you don't get stuck inside them)
-                    localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                    -- Teleports you behind the target
+                    localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                 end
                 
-                task.wait(0.05) -- Faster wait for smoother TP sticking
+                task.wait(0.01) -- Very fast wait for "sticky" TP
             end
         end)
     end
