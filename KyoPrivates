@@ -620,7 +620,7 @@ Tab:AddSwitch("Lock Position", function(Value)
     end
 end)
 
-local Tab = window:AddTab("Features") -- Name of tab
+local Tab = window:AddTab("Teleports Gym🌠") -- Name of tab
 
 -- TP to Muscle Emperor gym
 Tab:AddButton("TP to Muscle Emperor gym", function()
@@ -658,7 +658,7 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
-local CreditsTab = Window:CreateFolder("Credits")
+local CreditsTab = window:AddTab("Credits🥷") -- Name of tab
 
 -- Adding the Credits
 CreditsTab:AddLabel("⚡Made By Kyo⚡") -- Original creator
