@@ -425,7 +425,7 @@ game:GetService('RunService').RenderStepped:Connect(function()
     end
 end)
 
-local Tab = window:AddTab("Misc⚙️")
+local Tab = window:AddTab("Misc⚙️") -- Name of tab
 
 Tab:AddButton("Load Hand Master R15", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
@@ -499,12 +499,15 @@ Mouse.Button1Down:Connect(function()
 end)
 
 Tab:AddToggle("Toggle Size Change", function(Value)
-    _G.Active = Value
+    _G.ActiveSize = Value -- Changed to ActiveSize to avoid global conflicts
     if Value then
         task.spawn(function()
-            while _G.Active do
+            while _G.ActiveSize do
                 local args = { [1] = 1 }
-                game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(unpack(args))
+                local remote = game:GetService("ReplicatedStorage"):FindFirstChild("RemotesEvent") and game:GetService("ReplicatedStorage").RemotesEvent:FindFirstChild("SizeChanged")
+                if remote then
+                    remote:FireServer(unpack(args))
+                end
                 task.wait(0.1)
             end
         end)
@@ -524,7 +527,7 @@ Tab:AddToggle("Anti-AFK", function(Value)
         _G.AFKConnection:Disconnect()
         _G.AFKConnection = nil
     end
-end
+end) -- Added the missing closing bracket here
 
 local Tab = Window:AddTab("Movement⚡")
 
