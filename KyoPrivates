@@ -241,3 +241,121 @@ EggTab:AddSwitch("Auto Sell Trash Pets", function(Value)
         end)
     end
 end)
+
+local Tab = window:AddTab("Combat☠️") -- Name of tab
+
+-- Add the switch to your Tab
+Tab:AddSwitch("Auto Kill", function(Value)
+    _G.Spawnkill = Value
+    if Value then
+        task.spawn(function()
+            local Players = game:GetService("Players")
+            local localPlayer = Players.LocalPlayer
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            
+            while _G.Spawnkill do
+                local character = localPlayer.Character
+                local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+                local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+                if character and rootPart and humanoid then
+                    -- Handle Tool Equipping/Activating
+                    local tool = localPlayer.Backpack:FindFirstChildOfClass("Tool") or character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        if tool.Parent ~= character then
+                            humanoid:EquipTool(tool)
+                        end
+                        tool:Activate()
+                    end
+
+                    -- Target and Teleport
+                    for _, player in ipairs(Players:GetPlayers()) do
+                        if player ~= localPlayer and player.Character then
+                            local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                            local tHum = player.Character:FindFirstChild("Humanoid")
+                            
+                            if tRoot and tHum and tHum.Health > 0 then
+                                rootPart.CFrame = tRoot.CFrame * CFrame.new(0, 0, 3)
+                                break -- Focus on one target at a time
+                            end
+                        end
+                    end
+                end
+
+                -- Remote Spam (Size Change)
+                local remotes = ReplicatedStorage:FindFirstChild("RemotesEvent")
+                if remotes and remotes:FindFirstChild("SizeChanged") then
+                    remotes.SizeChanged:FireServer(1)
+                end
+
+                task.wait() -- Small delay to prevent crashing
+            end
+        end)
+    end
+end)
+
+local SelectedPlayer = ""
+local LoopActive = false
+local KillTarget = false -- New toggle state
+
+-- 1. The Dropdown
+local PlayerDropdown = Tab:AddDropdown("Select Target", function(Option)
+    SelectedPlayer = Option
+end)
+
+local function RefreshList()
+    PlayerDropdown:Clear()
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer then 
+            PlayerDropdown:Add(v.Name) 
+        end
+    end
+end
+RefreshList()
+
+-- 2. Refresh Button
+Tab:AddButton("Refresh List", RefreshList)
+
+-- 3. Kill Target Toggle
+Tab:AddSwitch("Auto Kill Target", function(Value)
+    KillTarget = Value
+end)
+
+-- 4. Loop TP Switch (Modified to include killing)
+Tab:AddSwitch("Loop TP to Target", function(Value)
+    LoopActive = Value
+    if Value then
+        task.spawn(function()
+            while LoopActive do
+                if SelectedPlayer ~= "" then
+                    local lp = game.Players.LocalPlayer
+                    local target = game.Players:FindFirstChild(SelectedPlayer)
+                    
+                    if target and target.Character and lp.Character then
+                        local tRoot = target.Character:FindFirstChild("HumanoidRootPart")
+                        local tHum = target.Character:FindFirstChild("Humanoid")
+                        local lpRoot = lp.Character:FindFirstChild("HumanoidRootPart")
+                        local lpHum = lp.Character:FindFirstChild("Humanoid")
+
+                        if tRoot and lpRoot and tHum and tHum.Health > 0 then
+                            -- Teleport to Target
+                            lp.Character:PivotTo(tRoot.CFrame * CFrame.new(0, 0, 3))
+
+                            -- Auto Attack Logic
+                            if KillTarget then
+                                local tool = lp.Backpack:FindFirstChildOfClass("Tool") or lp.Character:FindFirstChildOfClass("Tool")
+                                if tool then
+                                    if tool.Parent ~= lp.Character then
+                                        lpHum:EquipTool(tool)
+                                    end
+                                    tool:Activate() -- Swings or fires the tool
+                                end
+                            end
+                        end
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
