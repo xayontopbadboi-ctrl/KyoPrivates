@@ -1,0 +1,128 @@
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library//main/Library", true))()
+
+local window = library:AddWindow("😡Kyo Privates Only😡", {
+    main_color = Color3.fromRGB(0, 0, 0), -- Black theme as requested
+    min_size = Vector2.new(500, 500),
+    can_resize = false,
+})
+
+local MainTab = window:AddTab("Main💪")
+
+MainTab:AddToggle("Auto Lift (Fast)", function(Value)
+    _G.AutoLifting = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoLifting do
+                game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveEvent:FireServer()
+                task.wait(0.01) 
+            end
+        end)
+    end
+end)
+
+MainTab:AddToggle("Auto (Bench/Pullup)", function(Value)
+    _G.AutoTraining = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoTraining do
+                local Machines = {
+                    workspace:FindFirstChild("MachinesFolder") and workspace.MachinesFolder:FindFirstChild("Bench Press Muscle Emperor"),
+                    workspace:FindFirstChild("MachinesFolder") and workspace.MachinesFolder:FindFirstChild("Pull Ups Muscle Emperor")
+                }
+                for _, machine in pairs(Machines) do
+                    if machine and _G.AutoTraining then
+                        game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveFunction:InvokeServer(machine, true)
+                    end
+                end
+                task.wait(2) 
+            end
+        end)
+    end
+end)
+
+MainTab:AddToggle("Auto Squat", function(Value)
+    _G.AutoFarm = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoFarm do
+                local remote = game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveFunction
+                local machines = workspace:FindFirstChild("MachinesFolder")
+                if machines and machines:FindFirstChild("Squat Muscle Emperor") then
+                    remote:InvokeServer(machines["Squat Muscle Emperor"], true)
+                end
+                task.wait(3)
+                if not _G.AutoFarm then break end
+                if machines and machines:FindFirstChild("Rock Squat Muscle Emperor") then
+                    remote:InvokeServer(machines["Rock Squat Muscle Emperor"], true)
+                end
+                task.wait(2)
+            end
+        end)
+    end
+end)
+
+MainTab:AddToggle("Auto Rebirth", function(Value)
+    _G.AutoRebirth = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoRebirth do
+                game:GetService("ReplicatedStorage").RemotesEvent.RebirthEvent:FireServer()
+                task.wait(0.5) 
+            end
+        end)
+    end
+end)
+
+local rewards = {"reward1", "reward2", "reward3", "reward4", "reward5"}
+MainTab:AddToggle("Auto Claim Rewards", function(Value)
+    _G.AutoClaim = Value
+    if _G.AutoClaim then
+        task.spawn(function()
+            while _G.AutoClaim do
+                for _, rewardID in pairs(rewards) do
+                    if not _G.AutoClaim then break end
+                    game:GetService("ReplicatedStorage").RemotesEvent.rewardClaim:FireServer(rewardID)
+                    task.wait(0.01)
+                end
+                task.wait(0.01)
+            end
+        end)
+    end
+end)
+
+MainTab:AddToggle("Auto Spin", function(Value)
+    _G.AutoSpin = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoSpin do
+                game:GetService("ReplicatedStorage").RemotesEvent.SpinFunction:InvokeServer()
+                task.wait(0.1) 
+            end
+        end)
+    end
+end)
+
+local AutoEatLoop = false
+MainTab:AddToggle("Auto Chocolates", function(Value)
+    AutoEatLoop = Value
+    task.spawn(function()
+        while AutoEatLoop do
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            local backpack = player:FindFirstChild("Backpack")
+
+            if humanoid and backpack then
+                for _, tool in pairs(backpack:GetChildren()) do
+                    if not AutoEatLoop then break end
+                    if tool:IsA("Tool") then
+                        humanoid:EquipTool(tool)
+                        game:GetService("ReplicatedStorage").RemotesEvent.ChocolateEatEvent:FireServer(tool)
+                        task.wait(0.3) 
+                    end
+                end
+            end
+            task.wait(0.1)
+        end
+    end)
+end)
