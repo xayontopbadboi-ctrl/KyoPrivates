@@ -534,7 +534,7 @@ end)
 getgenv().WalkSpeedValue = 16 
 
 -- 1. Create the Textbox for Speed Input
-Features:AddTextBox("Set Loop Speed", function(text)
+Tab:AddTextBox("Set Loop Speed", function(text)
     local num = tonumber(text)
     if num then
         getgenv().WalkSpeedValue = num
