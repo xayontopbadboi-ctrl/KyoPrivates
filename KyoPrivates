@@ -294,15 +294,24 @@ Tab:AddSwitch("Auto Kill", function(Value)
     end
 end)
 
-local targetName = "PlayerNameHere" -- Replace with the target's name
-local killing = true -- Set to false to stop the loop
+-- Element 1: TextBox to select target
+Tab:AddTextBox("Target Player Name", function(text)
+    TargetName = text
+end, {["clear"] = false})
 
-task.spawn(function()
-    while killing do
-        local target = game.Players:FindFirstChild(targetName)
-        if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-            target.Character.Humanoid.Health = 0
-        end
-        task.wait(0.1) -- Small delay to prevent crashing and ensure they die on respawn
+-- Element 2: Toggle to start/stop the kill loop
+Tab:AddSwitch("Loop Kill Target", function(state)
+    LoopKilling = state
+    if LoopKilling then
+        task.spawn(function()
+            while LoopKilling do
+                local player = game.Players:FindFirstChild(TargetName)
+                if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+                    -- Setting health to 0 effectively kills the character
+                    player.Character.Humanoid.Health = 0
+                end
+                task.wait(0.1) -- Small delay to prevent game crashes
+            end
+        end)
     end
 end)
