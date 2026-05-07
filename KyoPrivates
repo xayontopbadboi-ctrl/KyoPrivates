@@ -653,8 +653,7 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
--- 1. Create the Credits Tab
-local credits = window:AddTab("Credits")
+local Tab = window:AddTab("Credits❤️💋") -- Name of tab
 
 -- 2. (Optional) Group credits into folders for better organization
 local staff = credits:AddFolder("💪Kyo Private💪")
