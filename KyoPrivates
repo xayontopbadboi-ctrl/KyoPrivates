@@ -653,8 +653,9 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
--- Create the Credits Tab
-local CreditsTab = Window:AddTab("Credits💋❤️🖕")
+local CreditsTab = Window:AddTab("Credits")
+-- Add your content here
+CreditsTab:Show() -- This is the missing step!
 
 -- Add standard labels to display credit information
 CreditsTab:AddLabel("--- Kyo Private ---")
