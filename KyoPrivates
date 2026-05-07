@@ -530,29 +530,35 @@ Tab:AddButton("Load Fly GUI V3", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
--- Variable to store your speed
-getgenv().WalkSpeedValue = 16 
+-- Variables for control
+getgenv().LoopSpeedEnabled = false
+getgenv().WalkSpeedValue = 16
 
--- 1. Create the Textbox for Speed Input
-Tab:AddTextBox("Set Loop Speed", function(text)
+-- 1. The Switch (Toggle)
+Tab:AddSwitch("Loop WalkSpeed", function(bool)
+    getgenv().LoopSpeedEnabled = bool
+    print("Loop Speed is now: ", bool)
+end)
+
+-- 2. The Textbox (Speed Value)
+Tab:AddTextBox("Speed Amount", function(text)
     local num = tonumber(text)
     if num then
         getgenv().WalkSpeedValue = num
-        print("Loop speed set to: " .. num)
-    else
-        print("Please enter a valid number!")
     end
 end)
 
--- 2. The Background Loop (Prevents speed from resetting)
+-- 3. The Background Loop
 task.spawn(function()
     while task.wait() do
-        pcall(function()
-            local character = game.Players.LocalPlayer.Character
-            if character and character:FindFirstChild("Humanoid") then
-                character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
-            end
-        end)
+        if getgenv().LoopSpeedEnabled then
+            pcall(function()
+                local char = game.Players.LocalPlayer.Character
+                if char and char:FindFirstChild("Humanoid") then
+                    char.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
+                end
+            end)
+        end
     end
 end)
 
