@@ -294,13 +294,17 @@ Tab:AddSwitch("Auto Kill", function(Value)
     end
 end)
 
-local TargetName = "" -- Variable to store the name you type
+local TargetName = "" 
 local LoopKilling = false
 
--- 1. Add the TextBox to type the player's name
+-- 1. Fixed TextBox: Added placeholder text and ensured table formatting
 Tab:AddTextBox("Target Player Name", function(text)
     TargetName = text
-end, {["clear"] = false})
+    print("Target set to: " .. TargetName) -- Helpful for debugging
+end, {
+    ["placeholder"] = "Enter Username...",
+    ["clear"] = false
+})
 
 -- 2. The TP Kill Toggle
 Tab:AddSwitch("TP Kill Target", function(state)
@@ -309,7 +313,7 @@ Tab:AddSwitch("TP Kill Target", function(state)
         task.spawn(function()
             local localPlayer = game.Players.LocalPlayer
             while LoopKilling do
-                -- It uses the TargetName variable from the TextBox above
+                -- Use FindFirstChild to safely check if player exists
                 local target = game.Players:FindFirstChild(TargetName)
                 
                 if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
@@ -319,7 +323,7 @@ Tab:AddSwitch("TP Kill Target", function(state)
                     localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                 end
                 
-                task.wait(0.01) -- Very fast wait for "sticky" TP
+                task.wait(0.01) 
             end
         end)
     end
