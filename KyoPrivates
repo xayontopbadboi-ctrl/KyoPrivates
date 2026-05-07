@@ -541,33 +541,38 @@ end
 
 local Tab = Window:AddTab("Movement⚡")
 
--- 2. Local State Variables
+-- Local Variables
 local LoopSpeedEnabled = false
-local TargetWalkSpeed = 16 -- Default Roblox speed
+local TargetWalkSpeed = 16
 
--- 3. UI Elements
+-- Toggle to turn the loop on/off
 Tab:AddSwitch("Enable LoopSpeed", false, function(Value)
     LoopSpeedEnabled = Value
 end)
 
--- Syntax: AddSlider(Name, Min, Max, Callback)
-Tab:AddSlider("WalkSpeed Amount", 16, 500, function(Value)
-    TargetWalkSpeed = Value
+-- Text Box to type the speed number
+Tab:AddBox("Set Speed Number", function(Text)
+    local num = tonumber(Text)
+    if num then
+        TargetWalkSpeed = num
+    else
+        -- Optional: Reset to default if letters are typed
+        TargetWalkSpeed = 16 
+    end
 end)
 
--- 4. The Background Loop
+-- The Background Loop
 task.spawn(function()
     while true do
         if LoopSpeedEnabled then
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            local p = game.Players.LocalPlayer
+            local char = p.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
             
-            -- Only update if the speed isn't already correct
-            if humanoid and humanoid.WalkSpeed ~= TargetWalkSpeed then
-                humanoid.WalkSpeed = TargetWalkSpeed
+            if hum and hum.WalkSpeed ~= TargetWalkSpeed then
+                hum.WalkSpeed = TargetWalkSpeed
             end
         end
-        task.wait(0.1) -- Fast enough to prevent resets but slow enough to be optimized
+        task.wait(0.1)
     end
 end)
