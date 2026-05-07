@@ -427,6 +427,14 @@ end)
 
 local Tab = Window:AddTab("Misc⚙️")
 
+-- Local variables for toggles
+local WalkflingEnabled = false
+local ClickTPEnabled = false
+local SizeActive = false
+local AntiAFKEnabled = false
+local AFKConnection = nil
+local Mouse = game.Players.LocalPlayer:GetMouse()
+
 -- 1. Load Hand Master R15
 Tab:AddButton("Load Hand Master R15", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
