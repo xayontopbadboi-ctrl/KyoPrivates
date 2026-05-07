@@ -535,40 +535,44 @@ Tab:AddSwitch("Anti-AFK", function(Value)
     end
 end)
 
-local Tab = Window:AddTab("Movement⚡")
+local Tab = window:AddTab("Movement⚡") -- Name of tab
 
--- Local Variables
+local SpeedValue = 16
 local LoopSpeedEnabled = false
-local TargetWalkSpeed = 16
 
--- Toggle to turn the loop on/off
-Tab:AddSwitch("Enable LoopSpeed", false, function(Value)
-    LoopSpeedEnabled = Value
-end)
-
--- Text Box to type the speed number
-Tab:AddBox("Set Speed Number", function(Text)
-    local num = tonumber(Text)
+-- 1. TextBox to type the speed number
+Tab:AddTextBox("Set Speed Number", "Type speed here (e.g. 100)", function(text)
+    local num = tonumber(text)
     if num then
-        TargetWalkSpeed = num
+        SpeedValue = num
     else
-        -- Optional: Reset to default if letters are typed
-        TargetWalkSpeed = 16 
+        -- Optional: Reset to default if input isn't a number
+        SpeedValue = 16
     end
 end)
 
--- The Background Loop
-task.spawn(function()
-    while true do
-        if LoopSpeedEnabled then
-            local p = game.Players.LocalPlayer
-            local char = p.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            
-            if hum and hum.WalkSpeed ~= TargetWalkSpeed then
-                hum.WalkSpeed = TargetWalkSpeed
+-- 2. Switch to keep the speed locked
+Tab:AddSwitch("Enable Speed Loop", function(Value)
+    LoopSpeedEnabled = Value
+    
+    if Value then
+        task.spawn(function()
+            while LoopSpeedEnabled do
+                local char = game.Players.LocalPlayer.Character
+                local hum = char and char:FindFirstChildOfClass("Humanoid")
+                
+                if hum then
+                    hum.WalkSpeed = SpeedValue
+                end
+                task.wait(0.1) -- Loop ensures the speed stays set
             end
+        end)
+    else
+        -- Reset to normal speed when off
+        local char = game.Players.LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = 16
         end
-        task.wait(0.1)
     end
 end)
