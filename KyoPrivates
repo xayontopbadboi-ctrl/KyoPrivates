@@ -660,6 +660,3 @@ local credits = window:AddTab("Credits")
 local staff = credits:AddFolder("💪Kyo Private💪")
 staff:AddLabel("💩Lead Developer: Kyo🖕")
 staff:AddLabel("💩Developer by: Kyo🖕")
-
--- 3. Set the tab to be active
-credits:Show()
