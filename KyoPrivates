@@ -456,7 +456,8 @@ Tab:AddButton("Jerk Tool (R15)", function()
 end)
 
 local WalkflingEnabled = false
-Tab:AddToggle("OP Walkfling", function(Value)
+-- Changed AddToggle to AddSwitch
+Tab:AddSwitch("OP Walkfling", function(Value)
     WalkflingEnabled = Value
     task.spawn(function()
         local lp = game.Players.LocalPlayer
@@ -484,7 +485,8 @@ end)
 
 local ClickTPEnabled = false
 local Mouse = game.Players.LocalPlayer:GetMouse()
-Tab:AddToggle("Click Teleport", function(Value)
+-- Changed AddToggle to AddSwitch
+Tab:AddSwitch("Click Teleport", function(Value)
     ClickTPEnabled = Value
 end)
 
@@ -498,15 +500,18 @@ Mouse.Button1Down:Connect(function()
     end
 end)
 
-Tab:AddToggle("Toggle Size Change", function(Value)
-    _G.ActiveSize = Value -- Changed to ActiveSize to avoid global conflicts
+-- Changed AddToggle to AddSwitch
+Tab:AddSwitch("Toggle Size Change", function(Value)
+    _G.ActiveSize = Value 
     if Value then
         task.spawn(function()
             while _G.ActiveSize do
                 local args = { [1] = 1 }
-                local remote = game:GetService("ReplicatedStorage"):FindFirstChild("RemotesEvent") and game:GetService("ReplicatedStorage").RemotesEvent:FindFirstChild("SizeChanged")
-                if remote then
-                    remote:FireServer(unpack(args))
+                local remote = game:GetService("ReplicatedStorage"):FindFirstChild("RemotesEvent")
+                local sizeRemote = remote and remote:FindFirstChild("SizeChanged")
+                
+                if sizeRemote then
+                    sizeRemote:FireServer(unpack(args))
                 end
                 task.wait(0.1)
             end
@@ -514,7 +519,8 @@ Tab:AddToggle("Toggle Size Change", function(Value)
     end
 end)
 
-Tab:AddToggle("Anti-AFK", function(Value)
+-- Changed AddToggle to AddSwitch
+Tab:AddSwitch("Anti-AFK", function(Value)
     _G.AntiAFK = Value
     if Value then
         _G.AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
@@ -527,7 +533,7 @@ Tab:AddToggle("Anti-AFK", function(Value)
         _G.AFKConnection:Disconnect()
         _G.AFKConnection = nil
     end
-end) -- Added the missing closing bracket here
+end)
 
 local Tab = Window:AddTab("Movement⚡")
 
