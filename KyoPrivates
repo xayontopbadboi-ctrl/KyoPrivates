@@ -653,20 +653,18 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
+-- 2. Create the Tab
 local CreditsTab = Window:AddTab("Credits")
--- Add your content here
-CreditsTab:Show() -- This is the missing step!
 
--- Add standard labels to display credit information
+-- 3. Add Content FIRST
 CreditsTab:AddLabel("--- Kyo Private ---")
-CreditsTab:AddLabel("Lead Scripter: [Kyo💩")
-CreditsTab:AddLabel("Developer by: Kyo👀")
+CreditsTab:AddLabel("Lead Scripter: Kyo 💩")
+CreditsTab:AddLabel("Developer by: Kyo 👀")
 
--- You can also add buttons to the credits tab for things like Discord links
 CreditsTab:AddButton("Copy Discord Link", function()
     setclipboard("https://discord.gg")
     print("Discord link copied to clipboard!")
 end)
 
--- Initialize by showing the main tab
+-- 4. Show the Tab LAST
 CreditsTab:Show()
