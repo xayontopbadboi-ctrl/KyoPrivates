@@ -525,6 +525,11 @@ end)
 
 local Tab = window:AddTab("Movement⚡") -- Name of tab
 
+Tab:AddButton("Load Fly GUI V3", function()
+    -- This executes the external Fly GUI script when the button is clicked
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+end)
+
 local SpeedValue = 16 -- Default speed
 local LoopSpeedEnabled = false
 
@@ -559,69 +564,6 @@ Tab:AddSwitch("Loop Speed", function(state)
         if humanoid then
             humanoid.WalkSpeed = 16
         end
-    end
-end)
-
-local FlySpeed = 50
-local Flying = false
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
-
--- 1. TextBox to set Flight Speed
-Tab:AddTextBox("Flight Speed", "Default: 50", function(text)
-    local num = tonumber(text)
-    if num then
-        FlySpeed = num
-    end
-end)
-
--- 2. Switch to Enable/Disable Flight
-Tab:AddSwitch("Enable Fly", function(state)
-    Flying = state
-    
-    if Flying then
-        task.spawn(function()
-            local char = player.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-
-            -- Create body objects for flight
-            local bv = Instance.new("BodyVelocity", hrp)
-            local bg = Instance.new("BodyGyro", hrp)
-            
-            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            bv.Velocity = Vector3.new(0, 0, 0)
-            bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-            bg.P = 9000
-            
-            while Flying and char and hrp do
-                -- Control Logic
-                bg.CFrame = workspace.CurrentCamera.CFrame
-                local direction = Vector3.new(0,0,0)
-                
-                -- Basic WASD Support via Camera direction
-                local cam = workspace.CurrentCamera.CFrame
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
-                    direction = direction + cam.LookVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
-                    direction = direction - cam.LookVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
-                    direction = direction - cam.RightVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
-                    direction = direction + cam.RightVector
-                end
-                
-                bv.Velocity = direction * FlySpeed
-                task.wait()
-            end
-            
-            -- Cleanup
-            bv:Destroy()
-            bg:Destroy()
-        end)
     end
 end)
 
@@ -677,3 +619,51 @@ Tab:AddSwitch("Lock Position", function(Value)
         end
     end
 end)
+
+-- Elerium uses Folders inside windows to organize buttons
+local GymTab = Window:CreateFolder("Teleports Gym 🌌")
+
+-- TP to Muscle Emperor gym
+GymTab:AddButton("TP to Muscle Emperor gym", function()
+    local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
+    local target = workspace:WaitForChild("Doors"):WaitForChild("The Muscle Emperor"):WaitForChild("Door"):WaitForChild("toPart")
+    
+    remote:FireServer(target)
+    print("Teleported to Muscle Emperor")
+end)
+
+-- TP to Frost gym
+GymTab:AddButton("TP to Frost gym", function()
+    local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
+    local target = workspace:WaitForChild("Doors"):WaitForChild("Frost"):WaitForChild("Door"):WaitForChild("toPart")
+    
+    remote:FireServer(target)
+    print("Teleported to Frost")
+end)
+
+-- TP to Master gym
+GymTab:AddButton("TP to Master gym", function()
+    local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
+    local target = workspace:WaitForChild("Doors"):WaitForChild("Folder"):WaitForChild("Door2"):WaitForChild("toPart")
+    
+    remote:FireServer(target)
+    print("Teleported to Master")
+end)
+
+-- TP to Stone Realm gym
+GymTab:AddButton("TP to Stone Realm gym", function()
+    local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
+    local target = workspace:WaitForChild("Doors"):WaitForChild("Stone Realm"):WaitForChild("Door"):WaitForChild("toPart")
+    
+    remote:FireServer(target)
+    print("Teleported to Stone Realm")
+end)
+
+
+-- Create a dedicated Credits Folder or Tab
+local CreditsTab = Window:CreateFolder("Credits")
+
+-- Adding the Credits
+CreditsTab:AddLabel("⚡Made By Kyo⚡") -- Original creator
+CreditsTab:AddLabel("Kyo Privates🙊") -- Repository host
+CreditsTab:AddLabel("Script Developer:Kyo🥷") -- Add yourself here
