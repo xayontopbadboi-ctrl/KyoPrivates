@@ -9,7 +9,8 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
 local Main = window:AddTab("Main") -- Name of tab
 features:Show() -- shows the tab
 
-MainTab:AddToggle("Auto Lift (Fast)", function(Value)
+-- Auto Lift (Fast)
+MainTab:AddSwitch("Auto Lift (Fast)", function(Value)
     _G.AutoLifting = Value
     if Value then
         task.spawn(function()
@@ -21,18 +22,22 @@ MainTab:AddToggle("Auto Lift (Fast)", function(Value)
     end
 end)
 
-MainTab:AddToggle("Auto (Bench/Pullup)", function(Value)
+-- Auto (Bench/Pullup)
+MainTab:AddSwitch("Auto (Bench/Pullup)", function(Value)
     _G.AutoTraining = Value
     if Value then
         task.spawn(function()
             while _G.AutoTraining do
-                local Machines = {
-                    workspace:FindFirstChild("MachinesFolder") and workspace.MachinesFolder:FindFirstChild("Bench Press Muscle Emperor"),
-                    workspace:FindFirstChild("MachinesFolder") and workspace.MachinesFolder:FindFirstChild("Pull Ups Muscle Emperor")
-                }
-                for _, machine in pairs(Machines) do
-                    if machine and _G.AutoTraining then
-                        game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveFunction:InvokeServer(machine, true)
+                local MachinesFolder = workspace:FindFirstChild("MachinesFolder")
+                if MachinesFolder then
+                    local Machines = {
+                        MachinesFolder:FindFirstChild("Bench Press Muscle Emperor"),
+                        MachinesFolder:FindFirstChild("Pull Ups Muscle Emperor")
+                    }
+                    for _, machine in pairs(Machines) do
+                        if machine and _G.AutoTraining then
+                            game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveFunction:InvokeServer(machine, true)
+                        end
                     end
                 end
                 task.wait(2) 
@@ -41,18 +46,22 @@ MainTab:AddToggle("Auto (Bench/Pullup)", function(Value)
     end
 end)
 
-MainTab:AddToggle("Auto Squat", function(Value)
+-- Auto Squat
+MainTab:AddSwitch("Auto Squat", function(Value)
     _G.AutoFarm = Value
     if Value then
         task.spawn(function()
             while _G.AutoFarm do
                 local remote = game:GetService("ReplicatedStorage").RemotesEvent.MachineActiveFunction
                 local machines = workspace:FindFirstChild("MachinesFolder")
+                
                 if machines and machines:FindFirstChild("Squat Muscle Emperor") then
                     remote:InvokeServer(machines["Squat Muscle Emperor"], true)
                 end
+                
                 task.wait(3)
                 if not _G.AutoFarm then break end
+                
                 if machines and machines:FindFirstChild("Rock Squat Muscle Emperor") then
                     remote:InvokeServer(machines["Rock Squat Muscle Emperor"], true)
                 end
@@ -62,7 +71,8 @@ MainTab:AddToggle("Auto Squat", function(Value)
     end
 end)
 
-MainTab:AddToggle("Auto Rebirth", function(Value)
+-- Auto Rebirth
+MainTab:AddSwitch("Auto Rebirth", function(Value)
     _G.AutoRebirth = Value
     if Value then
         task.spawn(function()
@@ -74,10 +84,11 @@ MainTab:AddToggle("Auto Rebirth", function(Value)
     end
 end)
 
+-- Auto Claim Rewards
 local rewards = {"reward1", "reward2", "reward3", "reward4", "reward5"}
-MainTab:AddToggle("Auto Claim Rewards", function(Value)
+MainTab:AddSwitch("Auto Claim Rewards", function(Value)
     _G.AutoClaim = Value
-    if _G.AutoClaim then
+    if Value then
         task.spawn(function()
             while _G.AutoClaim do
                 for _, rewardID in pairs(rewards) do
@@ -91,7 +102,8 @@ MainTab:AddToggle("Auto Claim Rewards", function(Value)
     end
 end)
 
-MainTab:AddToggle("Auto Spin", function(Value)
+-- Auto Spin
+MainTab:AddSwitch("Auto Spin", function(Value)
     _G.AutoSpin = Value
     if Value then
         task.spawn(function()
@@ -103,27 +115,129 @@ MainTab:AddToggle("Auto Spin", function(Value)
     end
 end)
 
+-- Auto Chocolates
 local AutoEatLoop = false
-MainTab:AddToggle("Auto Chocolates", function(Value)
+MainTab:AddSwitch("Auto Chocolates", function(Value)
     AutoEatLoop = Value
-    task.spawn(function()
-        while AutoEatLoop do
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-            local backpack = player:FindFirstChild("Backpack")
+    if Value then
+        task.spawn(function()
+            while AutoEatLoop do
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+                local backpack = player:FindFirstChild("Backpack")
 
-            if humanoid and backpack then
-                for _, tool in pairs(backpack:GetChildren()) do
-                    if not AutoEatLoop then break end
-                    if tool:IsA("Tool") then
-                        humanoid:EquipTool(tool)
-                        game:GetService("ReplicatedStorage").RemotesEvent.ChocolateEatEvent:FireServer(tool)
-                        task.wait(0.3) 
+                if humanoid and backpack then
+                    for _, tool in pairs(backpack:GetChildren()) do
+                        if not AutoEatLoop then break end
+                        if tool:IsA("Tool") then
+                            humanoid:EquipTool(tool)
+                            game:GetService("ReplicatedStorage").RemotesEvent.ChocolateEatEvent:FireServer(tool)
+                            task.wait(0.3) 
+                        end
                     end
                 end
+                task.wait(0.1)
             end
-            task.wait(0.1)
-        end
-    end)
+        end)
+    end
+end)
+
+-- Create the Tab in Elerium V2
+local Tab = Window:AddTab("Auto Eggs🥚")
+
+-- Auto Open mythic
+Tab:AddSwitch("Auto Open mythic", function(Value)
+    _G.AutoOpen = Value
+    if Value then
+        task.spawn(function()
+            local rarities = {"mythic", "legendary", "epic", "rare", "common"}
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("OpenPetEvent")
+            while _G.AutoOpen do
+                for _, rarity in ipairs(rarities) do
+                    if not _G.AutoOpen then break end
+                    remote:FireServer(rarity)
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Auto Open Legendary
+Tab:AddSwitch("Auto Open Legendary", function(Value)
+    _G.AutoLegendary = Value
+    if Value then
+        task.spawn(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("OpenPetEvent")
+            while _G.AutoLegendary do
+                remote:FireServer("legendary")
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Auto Open Epic
+Tab:AddSwitch("Auto Open Epic", function(Value)
+    _G.AutoEpic = Value
+    if Value then
+        task.spawn(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("OpenPetEvent")
+            while _G.AutoEpic do
+                remote:FireServer("epic")
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Auto Open Rare
+Tab:AddSwitch("Auto Open Rare", function(Value)
+    _G.AutoRare = Value
+    if Value then
+        task.spawn(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("OpenPetEvent")
+            while _G.AutoRare do
+                remote:FireServer("rare")
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Auto Open Common
+Tab:AddSwitch("Auto Open Common", function(Value)
+    _G.AutoCommon = Value
+    if Value then
+        task.spawn(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("OpenPetEvent")
+            while _G.AutoCommon do
+                remote:FireServer("common")
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Auto Sell Trash Pets
+Tab:AddSwitch("Auto Sell Trash Pets", function(Value)
+    _G.AutoSellEnabled = Value
+    if Value then
+        task.spawn(function()
+            local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("SellPetEvent")
+            local petFolder = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("gamegui"):WaitForChild("petsMenu"):WaitForChild("pets_item")
+            local petNames = {"Dezz", "Dragon", "Mighty Bull", "Hippopotamus", "Fangor", "Ragehorn", "Violet Fury", "RedHorn"}
+            while _G.AutoSellEnabled do
+                for _, name in ipairs(petNames) do
+                    if not _G.AutoSellEnabled then break end
+                    local petItem = petFolder:FindFirstChild(name)
+                    if petItem then 
+                        remote:FireServer(petItem) 
+                    end
+                end
+                task.wait(1)
+            end
+        end)
+    end
 end)
