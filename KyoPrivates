@@ -658,10 +658,13 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
--- Create a dedicated Credits Tab
-local creditsTab = window:AddTab("Credits")
+-- 1. Create the Credits Tab
+local credits = window:AddTab("Credits")
 
--- Use a Folder to group different types of credits
-local developersFolder = creditsTab:AddFolder("🥷Kyo Private🥷")
-developersFolder:AddLabel("Lead Dev: [🥷Kyo🥷]")
-developersFolder:AddLabel("💪Developer by: Kyo💪")
+-- 2. (Optional) Group credits into folders for better organization
+local staff = credits:AddFolder("💪Kyo Private💪")
+staff:AddLabel("🥷Lead Developer: Kyo🥷")
+staff:AddLabel("🥷Developer by: Kyo🥷")
+
+-- 3. Set the tab to be active
+credits:Show()
