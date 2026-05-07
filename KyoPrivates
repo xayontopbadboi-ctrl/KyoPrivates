@@ -541,111 +541,33 @@ end
 
 local Tab = Window:AddTab("Movement⚡")
 
-local RunService = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
-local player = game.Players.LocalPlayer
+-- 2. Local State Variables
+local LoopSpeedEnabled = false
+local TargetWalkSpeed = 16 -- Default Roblox speed
 
--- Local State Variables
-local flying = false
-local speed = 1
-local TargetSpeed = 16
-local LoopSpeedEnabled = true
-local InfiniteJump = false
-local bv, bg
-
--- // FLIGHT LOGIC
-local function startFly()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    local humanoid = character:WaitForChild("Humanoid")
-
-    if bv then bv:Destroy() end
-    if bg then bg:Destroy() end
-
-    bv = Instance.new("BodyVelocity")
-    bg = Instance.new("BodyGyro")
-
-    bv.MaxForce = Vector3.new(9e9,9e9,9e9)
-    bg.MaxTorque = Vector3.new(9e9,9e9,9e9)
-    bv.Parent = hrp
-    bg.Parent = hrp
-
-    humanoid.PlatformStand = true
-    flying = true
-
-    local connection
-    connection = RunService.RenderStepped:Connect(function()
-        if not flying or not character.Parent then
-            if bv then bv:Destroy() end
-            if bg then bg:Destroy() end
-            humanoid.PlatformStand = false
-            connection:Disconnect()
-            return
-        end
-
-        local cam = workspace.CurrentCamera
-        local move = Vector3.new(0, 0, 0)
-
-        if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0,1,0) end
-
-        bv.Velocity = move * (speed * 50)
-        bg.CFrame = cam.CFrame
-    end)
-end
-
--- // UI ELEMENTS
-Tab:AddSwitch("Fly", false, function(Value)
-    if Value then
-        startFly()
-    else
-        flying = false
-    end
+-- 3. UI Elements
+Tab:AddSwitch("Enable LoopSpeed", false, function(Value)
+    LoopSpeedEnabled = Value
 end)
 
-Tab:AddSlider("Flight Speed", 1, 10, function(Value)
-    speed = Value
+-- Syntax: AddSlider(Name, Min, Max, Callback)
+Tab:AddSlider("WalkSpeed Amount", 16, 500, function(Value)
+    TargetWalkSpeed = Value
 end)
 
-Tab:AddSlider("Loop WalkSpeed", 16, 500, function(Value)
-    TargetSpeed = Value
-end)
-
-Tab:AddSwitch("Infinite Jump", false, function(Value)
-    InfiniteJump = Value
-end)
-
-Tab:AddSwitch("Lock Position", false, function(Value)
-    local character = player.Character
-    local root = character and character:FindFirstChild("HumanoidRootPart")
-    if root then
-        root.Anchored = Value
-    end
-end)
-
--- // BACKGROUND LOOPS
+-- 4. The Background Loop
 task.spawn(function()
     while true do
         if LoopSpeedEnabled then
-            local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum and hum.WalkSpeed ~= TargetSpeed then
-                hum.WalkSpeed = TargetSpeed
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            
+            -- Only update if the speed isn't already correct
+            if humanoid and humanoid.WalkSpeed ~= TargetWalkSpeed then
+                humanoid.WalkSpeed = TargetWalkSpeed
             end
         end
-        task.wait(0.1)
+        task.wait(0.1) -- Fast enough to prevent resets but slow enough to be optimized
     end
 end)
-
-UIS.JumpRequest:Connect(function()
-    if InfiniteJump then
-        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum:ChangeState("Jumping")
-        end
-    end
-end
