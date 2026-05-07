@@ -6,7 +6,8 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
     can_resize = false,
 })
 
-local MainTab = window:AddTab("Main💪")
+local Main = window:AddTab("Main") -- Name of tab
+features:Show() -- shows the tab
 
 MainTab:AddToggle("Auto Lift (Fast)", function(Value)
     _G.AutoLifting = Value
