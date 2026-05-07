@@ -425,26 +425,17 @@ game:GetService('RunService').RenderStepped:Connect(function()
     end
 end)
 
-local Tab = Window:AddTab("Misc⚙️")
+local Tab = window:AddTab("Misc⚙️")
 
--- Local variables for toggles
-local WalkflingEnabled = false
-local ClickTPEnabled = false
-local SizeActive = false
-local AntiAFKEnabled = false
-local AFKConnection = nil
-local Mouse = game.Players.LocalPlayer:GetMouse()
-
--- 1. Load Hand Master R15
 Tab:AddButton("Load Hand Master R15", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
 end)
 
--- 2. Rejoin Game
 Tab:AddButton("Rejoin Game", function()
     local TeleportService = game:GetService("TeleportService")
     local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
+
     if #Players:GetPlayers() <= 1 then
         TeleportService:Teleport(game.PlaceId, LocalPlayer)
     else
@@ -452,23 +443,20 @@ Tab:AddButton("Rejoin Game", function()
     end
 end)
 
--- 3. Ultra Anti-Lag
 Tab:AddButton("Ultra Anti-Lag", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Ultra-AntiLag-147674"))()
 end)
 
--- 4. Load Emotes Script
 Tab:AddButton("Load Emotes Script", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
 end)
 
--- 5. Jerk Tool (R15)
 Tab:AddButton("Jerk Tool (R15)", function()
     loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
 end)
 
--- 6. OP Walkfling Switch
-Tab:AddSwitch("OP Walkfling", false, function(Value)
+local WalkflingEnabled = false
+Tab:AddToggle("OP Walkfling", function(Value)
     WalkflingEnabled = Value
     task.spawn(function()
         local lp = game.Players.LocalPlayer
@@ -476,6 +464,7 @@ Tab:AddSwitch("OP Walkfling", false, function(Value)
             local char = lp.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             local hum = char and char:FindFirstChildOfClass("Humanoid")
+            
             if hrp and hum then
                 hum:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
                 hrp.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
@@ -483,17 +472,19 @@ Tab:AddSwitch("OP Walkfling", false, function(Value)
             end
             task.wait(0.05)
         end
-        -- Reset when off
-        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+        
+        local char = lp.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
         if hrp then
-            hrp.AssemblyLinearVelocity = Vector3.zero
-            hrp.AssemblyAngularVelocity = Vector3.zero
+            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
         end
     end)
 end)
 
--- 7. Click Teleport Switch
-Tab:AddSwitch("Click Teleport", false, function(Value)
+local ClickTPEnabled = false
+local Mouse = game.Players.LocalPlayer:GetMouse()
+Tab:AddToggle("Click Teleport", function(Value)
     ClickTPEnabled = Value
 end)
 
@@ -507,35 +498,31 @@ Mouse.Button1Down:Connect(function()
     end
 end)
 
--- 8. Toggle Size Change Switch
-Tab:AddSwitch("Toggle Size Change", false, function(Value)
-    SizeActive = Value
+Tab:AddToggle("Toggle Size Change", function(Value)
+    _G.Active = Value
     if Value then
         task.spawn(function()
-            while SizeActive do
-                game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(1)
+            while _G.Active do
+                local args = { [1] = 1 }
+                game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(unpack(args))
                 task.wait(0.1)
             end
         end)
     end
 end)
 
--- 9. Anti-AFK Switch
-Tab:AddSwitch("Anti-AFK", false, function(Value)
-    AntiAFKEnabled = Value
+Tab:AddToggle("Anti-AFK", function(Value)
+    _G.AntiAFK = Value
     if Value then
-        if AFKConnection then AFKConnection:Disconnect() end
-        AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
-            if AntiAFKEnabled then
+        _G.AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
+            if _G.AntiAFK then
                 game:GetService("VirtualUser"):CaptureController()
                 game:GetService("VirtualUser"):ClickButton2(Vector2.new())
             end
         end)
-    else
-        if AFKConnection then
-            AFKConnection:Disconnect()
-            AFKConnection = nil
-        end
+    elseif _G.AFKConnection then
+        _G.AFKConnection:Disconnect()
+        _G.AFKConnection = nil
     end
 end
 
