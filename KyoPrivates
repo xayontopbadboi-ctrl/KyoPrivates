@@ -294,68 +294,15 @@ Tab:AddSwitch("Auto Kill", function(Value)
     end
 end)
 
-local SelectedPlayer = ""
-local LoopActive = false
-local KillTarget = false -- New toggle state
+local targetName = "PlayerNameHere" -- Replace with the target's name
+local killing = true -- Set to false to stop the loop
 
--- 1. The Dropdown
-local PlayerDropdown = Tab:AddDropdown("Select Target", function(Option)
-    SelectedPlayer = Option
-end)
-
-local function RefreshList()
-    PlayerDropdown:Clear()
-    for _, v in pairs(game.Players:GetPlayers()) do
-        if v ~= game.Players.LocalPlayer then 
-            PlayerDropdown:Add(v.Name) 
+task.spawn(function()
+    while killing do
+        local target = game.Players:FindFirstChild(targetName)
+        if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+            target.Character.Humanoid.Health = 0
         end
-    end
-end
-RefreshList()
-
--- 2. Refresh Button
-Tab:AddButton("Refresh List", RefreshList)
-
--- 3. Kill Target Toggle
-Tab:AddSwitch("Auto Kill Target", function(Value)
-    KillTarget = Value
-end)
-
--- 4. Loop TP Switch (Modified to include killing)
-Tab:AddSwitch("Loop TP to Target", function(Value)
-    LoopActive = Value
-    if Value then
-        task.spawn(function()
-            while LoopActive do
-                if SelectedPlayer ~= "" then
-                    local lp = game.Players.LocalPlayer
-                    local target = game.Players:FindFirstChild(SelectedPlayer)
-                    
-                    if target and target.Character and lp.Character then
-                        local tRoot = target.Character:FindFirstChild("HumanoidRootPart")
-                        local tHum = target.Character:FindFirstChild("Humanoid")
-                        local lpRoot = lp.Character:FindFirstChild("HumanoidRootPart")
-                        local lpHum = lp.Character:FindFirstChild("Humanoid")
-
-                        if tRoot and lpRoot and tHum and tHum.Health > 0 then
-                            -- Teleport to Target
-                            lp.Character:PivotTo(tRoot.CFrame * CFrame.new(0, 0, 3))
-
-                            -- Auto Attack Logic
-                            if KillTarget then
-                                local tool = lp.Backpack:FindFirstChildOfClass("Tool") or lp.Character:FindFirstChildOfClass("Tool")
-                                if tool then
-                                    if tool.Parent ~= lp.Character then
-                                        lpHum:EquipTool(tool)
-                                    end
-                                    tool:Activate() -- Swings or fires the tool
-                                end
-                            end
-                        end
-                    end
-                end
-                task.wait(0.1)
-            end
-        end)
+        task.wait(0.1) -- Small delay to prevent crashing and ensure they die on respawn
     end
 end)
