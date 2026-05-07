@@ -315,14 +315,22 @@ Tab:AddSwitch("TP Kill Target", function(state)
                 if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
                    localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     
-                    -- 1. Teleport to Target
+                    -- 1. Teleport behind the target
                     localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                     
-                    -- 2. Auto Attack Logic
-                    -- This finds the tool you are currently holding
+                    -- 2. Auto-Equip Logic (If not holding a tool, grab one from backpack)
                     local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
+                    if not tool then
+                        local backpackTool = localPlayer.Backpack:FindFirstChildOfClass("Tool")
+                        if backpackTool then
+                            localPlayer.Character.Humanoid:EquipTool(backpackTool)
+                            tool = backpackTool
+                        end
+                    end
+                    
+                    -- 3. Auto Attack Logic
                     if tool then
-                        tool:Activate() -- Simulates a click/swing
+                        tool:Activate() -- Swings the sword/uses the tool
                     end
                 end
                 
