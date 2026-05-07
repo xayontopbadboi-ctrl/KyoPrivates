@@ -341,81 +341,69 @@ Tab:AddSwitch("TP Kill Target", function(state)
 end)
 
 local AutoPunchActive = false
-local PunchConn = nil
 
-Tab:AddSwitch("Auto Punch", false, function(Value)
+Tab:AddSwitch("Auto Punch", function(Value)
     AutoPunchActive = Value
     
     local player = game.Players.LocalPlayer
-    local backpack = player:WaitForChild("Backpack")
-
-    -- 1. Handling the Auto-Equip Logic
-    local function EquipPunch(child)
-        if AutoPunchActive and child:IsA("Tool") and child.Name == "Punch" then
-            task.wait(0.1)
-            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid:EquipTool(child)
-            end
-        end
-    end
-
-    if AutoPunchActive then
-        -- Initial equip check
-        for _, tool in ipairs(backpack:GetChildren()) do EquipPunch(tool) end
-        
-        -- Local connection management
-        if PunchConn then PunchConn:Disconnect() end
-        PunchConn = backpack.ChildAdded:Connect(EquipPunch)
-        
-        -- 2. Handling the Auto-Click Logic
+    
+    if Value then
+        -- 1. Handling the Auto-Equip & Click Logic
         task.spawn(function()
             while AutoPunchActive do
                 local char = player.Character
+                local backpack = player:FindFirstChild("Backpack")
                 local tool = char and char:FindFirstChild("Punch")
                 
-                if tool and tool:IsA("Tool") then
-                    tool:Activate()
+                -- If not holding the tool, try to find it in backpack and equip it
+                if not tool and backpack then
+                    local bpTool = backpack:FindFirstChild("Punch")
+                    if bpTool then
+                        local hum = char and char:FindFirstChildOfClass("Humanoid")
+                        if hum then
+                            hum:EquipTool(bpTool)
+                        end
+                    end
                 end
-                task.wait(0.1)
+                
+                -- If we are now holding the tool, activate it
+                if char and char:FindFirstChild("Punch") then
+                    char.Punch:Activate()
+                end
+                
+                task.wait(0.1) -- Punch speed
             end
         end)
-    else
-        -- Clean up connection when turned off
-        if PunchConn then
-            PunchConn:Disconnect()
-            PunchConn = nil
-        end
     end
 end)
 
--- Local Variables (Replaces _G)
-local HitboxEnabled = false
-local HeadSize = 20
+_G.HeadSize = 20
+_G.HitboxEnabled = false 
 
-Tab:AddSwitch("Kill Aura", false, function(Value)
-    HitboxEnabled = Value
+-- Elerium V2 Switch
+Tab:AddSwitch("Kill Aura", function(Value)
+    _G.HitboxEnabled = Value
     
-    -- Resetting hitboxes when turned off
-    if not HitboxEnabled then
-        for _, v in ipairs(game:GetService('Players'):GetPlayers()) do
+    -- Reset hitboxes when turned off
+    if not Value then
+        for _, v in pairs(game:GetService('Players'):GetPlayers()) do
             if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
-                v.Character.HumanoidRootPart.Transparency = 0 -- Set to 0 if you want to see them again
+                v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1) -- Standard Roblox HRP size
+                v.Character.HumanoidRootPart.Transparency = 1
             end
         end
     end
 end)
 
--- Main Loop
+-- Constant loop for the expander
 game:GetService('RunService').RenderStepped:Connect(function()
-    if HitboxEnabled then
-        for _, v in ipairs(game:GetService('Players'):GetPlayers()) do
+    if _G.HitboxEnabled then
+        for _, v in pairs(game:GetService('Players'):GetPlayers()) do
             if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                 pcall(function()
                     local hrp = v.Character.HumanoidRootPart
-                    hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
-                    hrp.Transparency = 0.5 -- Semi-transparent so you can still see the player
+                    hrp.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                    hrp.Transparency = 0.7 -- Set to 0.7 so you can actually see the expanded hitbox
                     hrp.BrickColor = BrickColor.new("Really black")
                     hrp.Material = Enum.Material.Neon
                     hrp.CanCollide = false
@@ -537,42 +525,155 @@ end)
 
 local Tab = window:AddTab("Movement⚡") -- Name of tab
 
-local SpeedValue = 16
+local SpeedValue = 16 -- Default speed
 local LoopSpeedEnabled = false
 
--- 1. TextBox to type the speed number
-Tab:AddTextBox("Set Speed Number", "Type speed here (e.g. 100)", function(text)
+-- 1. TextBox to type the speed amount
+Tab:AddTextBox("Set Speed", "Enter number...", function(text)
     local num = tonumber(text)
     if num then
         SpeedValue = num
-    else
-        -- Optional: Reset to default if input isn't a number
-        SpeedValue = 16
     end
 end)
 
--- 2. Switch to keep the speed locked
-Tab:AddSwitch("Enable Speed Loop", function(Value)
-    LoopSpeedEnabled = Value
+-- 2. Switch to enable the constant loop
+Tab:AddSwitch("Loop Speed", function(state)
+    LoopSpeedEnabled = state
     
-    if Value then
+    if state then
         task.spawn(function()
             while LoopSpeedEnabled do
-                local char = game.Players.LocalPlayer.Character
-                local hum = char and char:FindFirstChildOfClass("Humanoid")
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                local humanoid = character and character:FindFirstChildOfClass("Humanoid")
                 
-                if hum then
-                    hum.WalkSpeed = SpeedValue
+                if humanoid then
+                    humanoid.WalkSpeed = SpeedValue
                 end
-                task.wait(0.1) -- Loop ensures the speed stays set
+                task.wait(0.1) -- Rapidly re-applies speed to bypass game resets
             end
         end)
     else
-        -- Reset to normal speed when off
-        local char = game.Players.LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.WalkSpeed = 16
+        -- Reset speed to normal when toggled off
+        local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 16
+        end
+    end
+end)
+
+local FlySpeed = 50
+local Flying = false
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- 1. TextBox to set Flight Speed
+Tab:AddTextBox("Flight Speed", "Default: 50", function(text)
+    local num = tonumber(text)
+    if num then
+        FlySpeed = num
+    end
+end)
+
+-- 2. Switch to Enable/Disable Flight
+Tab:AddSwitch("Enable Fly", function(state)
+    Flying = state
+    
+    if Flying then
+        task.spawn(function()
+            local char = player.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+
+            -- Create body objects for flight
+            local bv = Instance.new("BodyVelocity", hrp)
+            local bg = Instance.new("BodyGyro", hrp)
+            
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bv.Velocity = Vector3.new(0, 0, 0)
+            bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            bg.P = 9000
+            
+            while Flying and char and hrp do
+                -- Control Logic
+                bg.CFrame = workspace.CurrentCamera.CFrame
+                local direction = Vector3.new(0,0,0)
+                
+                -- Basic WASD Support via Camera direction
+                local cam = workspace.CurrentCamera.CFrame
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
+                    direction = direction + cam.LookVector
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
+                    direction = direction - cam.LookVector
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
+                    direction = direction - cam.RightVector
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
+                    direction = direction + cam.RightVector
+                end
+                
+                bv.Velocity = direction * FlySpeed
+                task.wait()
+            end
+            
+            -- Cleanup
+            bv:Destroy()
+            bg:Destroy()
+        end)
+    end
+end)
+
+local InfiniteJumpEnabled = false
+
+-- 1. Switch to Enable/Disable
+Tab:AddSwitch("Infinite Jump", function(Value)
+    InfiniteJumpEnabled = Value
+end)
+
+-- 2. The Logic (Listen for Jump Request)
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            -- Set state to Jumping to allow another jump in mid-air
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+local LockEnabled = false
+local LockedCFrame = nil
+
+Tab:AddSwitch("Lock Position", function(Value)
+    LockEnabled = Value
+    local char = game.Players.LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+    if LockEnabled then
+        if hrp then
+            -- Save current position and anchor
+            LockedCFrame = hrp.CFrame
+            hrp.Anchored = true
+            
+            -- Optional: Loop to ensure you don't drift
+            task.spawn(function()
+                while LockEnabled and hrp do
+                    hrp.CFrame = LockedCFrame
+                    hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+                    hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+                    task.wait()
+                end
+            end)
+        end
+    else
+        -- Unlock position
+        if hrp then
+            hrp.Anchored = false
         end
     end
 end)
