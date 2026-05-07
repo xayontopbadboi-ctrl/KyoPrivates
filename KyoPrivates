@@ -615,7 +615,7 @@ Tab:AddSwitch("Lock Position", function(Value)
     end
 end)
 
-local Tab = window:AddTab("Teleports Gym🌠") -- Name of tab
+local Tab = window:AddTab("TP Gym🌠") -- Name of tab
 
 -- TP to Muscle Emperor gym
 Tab:AddButton("TP to Muscle Emperor gym", function()
