@@ -294,23 +294,23 @@ Tab:AddSwitch("Auto Kill", function(Value)
     end
 end)
 
--- Element 1: TextBox to select target
-Tab:AddTextBox("Target Player Name", function(text)
-    TargetName = text
-end, {["clear"] = false})
-
--- Element 2: Toggle to start/stop the kill loop
-Tab:AddSwitch("Loop Kill Target", function(state)
+Tab:AddSwitch("TP Kill Target", function(state)
     LoopKilling = state
     if LoopKilling then
         task.spawn(function()
+            local localPlayer = game.Players.LocalPlayer
             while LoopKilling do
-                local player = game.Players:FindFirstChild(TargetName)
-                if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-                    -- Setting health to 0 effectively kills the character
-                    player.Character.Humanoid.Health = 0
+                local target = game.Players:FindFirstChild(TargetName)
+                
+                -- Check if both you and the target have characters/root parts
+                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
+                   localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    
+                    -- Teleport to the target's position (slightly offset so you don't get stuck inside them)
+                    localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
                 end
-                task.wait(0.1) -- Small delay to prevent game crashes
+                
+                task.wait(0.05) -- Faster wait for smoother TP sticking
             end
         end)
     end
