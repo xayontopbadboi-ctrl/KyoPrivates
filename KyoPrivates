@@ -6,7 +6,7 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
     can_resize = false,
 })
 
-local features = window:AddTab("Main") -- Name of tab
+local features = window:AddTab("Main💪") -- Name of tab
 features:Show() -- shows the tab
 
 -- Auto Lift (Fast)
@@ -339,3 +339,313 @@ Tab:AddSwitch("TP Kill Target", function(state)
         end)
     end
 end)
+
+local AutoPunchActive = false
+local PunchConn = nil
+
+Tab:AddSwitch("Auto Punch", false, function(Value)
+    AutoPunchActive = Value
+    
+    local player = game.Players.LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+
+    -- 1. Handling the Auto-Equip Logic
+    local function EquipPunch(child)
+        if AutoPunchActive and child:IsA("Tool") and child.Name == "Punch" then
+            task.wait(0.1)
+            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:EquipTool(child)
+            end
+        end
+    end
+
+    if AutoPunchActive then
+        -- Initial equip check
+        for _, tool in ipairs(backpack:GetChildren()) do EquipPunch(tool) end
+        
+        -- Local connection management
+        if PunchConn then PunchConn:Disconnect() end
+        PunchConn = backpack.ChildAdded:Connect(EquipPunch)
+        
+        -- 2. Handling the Auto-Click Logic
+        task.spawn(function()
+            while AutoPunchActive do
+                local char = player.Character
+                local tool = char and char:FindFirstChild("Punch")
+                
+                if tool and tool:IsA("Tool") then
+                    tool:Activate()
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        -- Clean up connection when turned off
+        if PunchConn then
+            PunchConn:Disconnect()
+            PunchConn = nil
+        end
+    end
+end)
+
+-- Local Variables (Replaces _G)
+local HitboxEnabled = false
+local HeadSize = 20
+
+Tab:AddSwitch("Kill Aura", false, function(Value)
+    HitboxEnabled = Value
+    
+    -- Resetting hitboxes when turned off
+    if not HitboxEnabled then
+        for _, v in ipairs(game:GetService('Players'):GetPlayers()) do
+            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+                v.Character.HumanoidRootPart.Transparency = 0 -- Set to 0 if you want to see them again
+            end
+        end
+    end
+end)
+
+-- Main Loop
+game:GetService('RunService').RenderStepped:Connect(function()
+    if HitboxEnabled then
+        for _, v in ipairs(game:GetService('Players'):GetPlayers()) do
+            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                pcall(function()
+                    local hrp = v.Character.HumanoidRootPart
+                    hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
+                    hrp.Transparency = 0.5 -- Semi-transparent so you can still see the player
+                    hrp.BrickColor = BrickColor.new("Really black")
+                    hrp.Material = Enum.Material.Neon
+                    hrp.CanCollide = false
+                end)
+            end
+        end
+    end
+end)
+
+local Tab = Window:AddTab("Misc⚙️")
+
+-- Local variables for toggles
+local WalkflingEnabled = false
+local ClickTPEnabled = false
+local SizeActive = false
+local AntiAFKEnabled = false
+local AFKConnection = nil
+local Mouse = game.Players.LocalPlayer:GetMouse()
+
+-- 1. Load Hand Master R15
+Tab:AddButton("Load Hand Master R15", function()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
+end)
+
+-- 2. Rejoin Game
+Tab:AddButton("Rejoin Game", function()
+    local TeleportService = game:GetService("TeleportService")
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    if #Players:GetPlayers() <= 1 then
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+    else
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end
+end)
+
+-- 3. Ultra Anti-Lag
+Tab:AddButton("Ultra Anti-Lag", function()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Ultra-AntiLag-147674"))()
+end)
+
+-- 4. Load Emotes Script
+Tab:AddButton("Load Emotes Script", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
+end)
+
+-- 5. Jerk Tool (R15)
+Tab:AddButton("Jerk Tool (R15)", function()
+    loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+end)
+
+-- 6. OP Walkfling Switch
+Tab:AddSwitch("OP Walkfling", false, function(Value)
+    WalkflingEnabled = Value
+    task.spawn(function()
+        local lp = game.Players.LocalPlayer
+        while WalkflingEnabled do
+            local char = lp.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hrp and hum then
+                hum:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+                hrp.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
+                hrp.AssemblyAngularVelocity = Vector3.new(0, 10000, 0)
+            end
+            task.wait(0.05)
+        end
+        -- Reset when off
+        local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.AssemblyLinearVelocity = Vector3.zero
+            hrp.AssemblyAngularVelocity = Vector3.zero
+        end
+    end)
+end)
+
+-- 7. Click Teleport Switch
+Tab:AddSwitch("Click Teleport", false, function(Value)
+    ClickTPEnabled = Value
+end)
+
+Mouse.Button1Down:Connect(function()
+    if ClickTPEnabled then
+        local character = game.Players.LocalPlayer.Character
+        local root = character and character:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CFrame = CFrame.new(Mouse.Hit.p + Vector3.new(0, 3, 0))
+        end
+    end
+end)
+
+-- 8. Toggle Size Change Switch
+Tab:AddSwitch("Toggle Size Change", false, function(Value)
+    SizeActive = Value
+    if Value then
+        task.spawn(function()
+            while SizeActive do
+                game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(1)
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- 9. Anti-AFK Switch
+Tab:AddSwitch("Anti-AFK", false, function(Value)
+    AntiAFKEnabled = Value
+    if Value then
+        if AFKConnection then AFKConnection:Disconnect() end
+        AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
+            if AntiAFKEnabled then
+                game:GetService("VirtualUser"):CaptureController()
+                game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+            end
+        end)
+    else
+        if AFKConnection then
+            AFKConnection:Disconnect()
+            AFKConnection = nil
+        end
+    end
+end
+
+local Tab = Window:AddTab("Movement⚡")
+
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+
+-- Local State Variables
+local flying = false
+local speed = 1
+local TargetSpeed = 16
+local LoopSpeedEnabled = true
+local InfiniteJump = false
+local bv, bg
+
+-- // FLIGHT LOGIC
+local function startFly()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    local humanoid = character:WaitForChild("Humanoid")
+
+    if bv then bv:Destroy() end
+    if bg then bg:Destroy() end
+
+    bv = Instance.new("BodyVelocity")
+    bg = Instance.new("BodyGyro")
+
+    bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+    bg.MaxTorque = Vector3.new(9e9,9e9,9e9)
+    bv.Parent = hrp
+    bg.Parent = hrp
+
+    humanoid.PlatformStand = true
+    flying = true
+
+    local connection
+    connection = RunService.RenderStepped:Connect(function()
+        if not flying or not character.Parent then
+            if bv then bv:Destroy() end
+            if bg then bg:Destroy() end
+            humanoid.PlatformStand = false
+            connection:Disconnect()
+            return
+        end
+
+        local cam = workspace.CurrentCamera
+        local move = Vector3.new(0, 0, 0)
+
+        if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0,1,0) end
+
+        bv.Velocity = move * (speed * 50)
+        bg.CFrame = cam.CFrame
+    end)
+end
+
+-- // UI ELEMENTS
+Tab:AddSwitch("Fly", false, function(Value)
+    if Value then
+        startFly()
+    else
+        flying = false
+    end
+end)
+
+Tab:AddSlider("Flight Speed", 1, 10, function(Value)
+    speed = Value
+end)
+
+Tab:AddSlider("Loop WalkSpeed", 16, 500, function(Value)
+    TargetSpeed = Value
+end)
+
+Tab:AddSwitch("Infinite Jump", false, function(Value)
+    InfiniteJump = Value
+end)
+
+Tab:AddSwitch("Lock Position", false, function(Value)
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.Anchored = Value
+    end
+end)
+
+-- // BACKGROUND LOOPS
+task.spawn(function()
+    while true do
+        if LoopSpeedEnabled then
+            local char = player.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum and hum.WalkSpeed ~= TargetSpeed then
+                hum.WalkSpeed = TargetSpeed
+            end
+        end
+        task.wait(0.1)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    if InfiniteJump then
+        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum:ChangeState("Jumping")
+        end
+    end
+end
