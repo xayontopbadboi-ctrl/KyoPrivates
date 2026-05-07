@@ -9,7 +9,6 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
 local MainTab = window:AddTab("Main") -- Name of tab
 features:Show() -- shows the tab
 
--- Auto Lift (Fast)
 MainTab:AddSwitch("Auto Lift (Fast)", function(Value)
     _G.AutoLifting = Value
     if Value then
@@ -22,7 +21,6 @@ MainTab:AddSwitch("Auto Lift (Fast)", function(Value)
     end
 end)
 
--- Auto (Bench/Pullup)
 MainTab:AddSwitch("Auto (Bench/Pullup)", function(Value)
     _G.AutoTraining = Value
     if Value then
@@ -46,7 +44,6 @@ MainTab:AddSwitch("Auto (Bench/Pullup)", function(Value)
     end
 end)
 
--- Auto Squat
 MainTab:AddSwitch("Auto Squat", function(Value)
     _G.AutoFarm = Value
     if Value then
@@ -71,7 +68,6 @@ MainTab:AddSwitch("Auto Squat", function(Value)
     end
 end)
 
--- Auto Rebirth
 MainTab:AddSwitch("Auto Rebirth", function(Value)
     _G.AutoRebirth = Value
     if Value then
@@ -84,7 +80,6 @@ MainTab:AddSwitch("Auto Rebirth", function(Value)
     end
 end)
 
--- Auto Claim Rewards
 local rewards = {"reward1", "reward2", "reward3", "reward4", "reward5"}
 MainTab:AddSwitch("Auto Claim Rewards", function(Value)
     _G.AutoClaim = Value
@@ -102,7 +97,6 @@ MainTab:AddSwitch("Auto Claim Rewards", function(Value)
     end
 end)
 
--- Auto Spin
 MainTab:AddSwitch("Auto Spin", function(Value)
     _G.AutoSpin = Value
     if Value then
@@ -115,7 +109,6 @@ MainTab:AddSwitch("Auto Spin", function(Value)
     end
 end)
 
--- Auto Chocolates
 local AutoEatLoop = false
 MainTab:AddSwitch("Auto Chocolates", function(Value)
     AutoEatLoop = Value
