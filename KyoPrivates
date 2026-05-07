@@ -144,10 +144,10 @@ features:AddSwitch("Auto Chocolates", function(Value)
 end)
 
 -- Create the Eggs Tab
-local EggTab = window:AddTab("Auto Eggs 🥚")
+local Tab = window:AddTab("Auto Eggs 🥚")
 
 -- Auto Open mythic (Opens all rarities)
-EggTab:AddSwitch("Auto Open mythic", function(Value)
+Tab:AddSwitch("Auto Open mythic", function(Value)
     _G.AutoOpen = Value
     if Value then
         task.spawn(function()
@@ -165,7 +165,7 @@ EggTab:AddSwitch("Auto Open mythic", function(Value)
 end)
 
 -- Auto Open Legendary
-EggTab:AddSwitch("Auto Open Legendary", function(Value)
+Tab:AddSwitch("Auto Open Legendary", function(Value)
     _G.AutoLegendary = Value
     if Value then
         task.spawn(function()
@@ -179,7 +179,7 @@ EggTab:AddSwitch("Auto Open Legendary", function(Value)
 end)
 
 -- Auto Open Epic
-EggTab:AddSwitch("Auto Open Epic", function(Value)
+Tab:AddSwitch("Auto Open Epic", function(Value)
     _G.AutoEpic = Value
     if Value then
         task.spawn(function()
@@ -193,7 +193,7 @@ EggTab:AddSwitch("Auto Open Epic", function(Value)
 end)
 
 -- Auto Open Rare
-EggTab:AddSwitch("Auto Open Rare", function(Value)
+Tab:AddSwitch("Auto Open Rare", function(Value)
     _G.AutoRare = Value
     if Value then
         task.spawn(function()
@@ -207,7 +207,7 @@ EggTab:AddSwitch("Auto Open Rare", function(Value)
 end)
 
 -- Auto Open Common
-EggTab:AddSwitch("Auto Open Common", function(Value)
+Tab:AddSwitch("Auto Open Common", function(Value)
     _G.AutoCommon = Value
     if Value then
         task.spawn(function()
@@ -221,7 +221,7 @@ EggTab:AddSwitch("Auto Open Common", function(Value)
 end)
 
 -- Auto Sell Trash Pets
-EggTab:AddSwitch("Auto Sell Trash Pets", function(Value)
+Tab:AddSwitch("Auto Sell Trash Pets", function(Value)
     _G.AutoSellEnabled = Value
     if Value then
         task.spawn(function()
@@ -620,11 +620,10 @@ Tab:AddSwitch("Lock Position", function(Value)
     end
 end)
 
--- Elerium uses Folders inside windows to organize buttons
-local GymTab = Window:CreateFolder("Teleports Gym 🌌")
+local Tab = window:AddTab("Features") -- Name of tab
 
 -- TP to Muscle Emperor gym
-GymTab:AddButton("TP to Muscle Emperor gym", function()
+Tab:AddButton("TP to Muscle Emperor gym", function()
     local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
     local target = workspace:WaitForChild("Doors"):WaitForChild("The Muscle Emperor"):WaitForChild("Door"):WaitForChild("toPart")
     
@@ -633,7 +632,7 @@ GymTab:AddButton("TP to Muscle Emperor gym", function()
 end)
 
 -- TP to Frost gym
-GymTab:AddButton("TP to Frost gym", function()
+Tab:AddButton("TP to Frost gym", function()
     local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
     local target = workspace:WaitForChild("Doors"):WaitForChild("Frost"):WaitForChild("Door"):WaitForChild("toPart")
     
@@ -642,7 +641,7 @@ GymTab:AddButton("TP to Frost gym", function()
 end)
 
 -- TP to Master gym
-GymTab:AddButton("TP to Master gym", function()
+Tab:AddButton("TP to Master gym", function()
     local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
     local target = workspace:WaitForChild("Doors"):WaitForChild("Folder"):WaitForChild("Door2"):WaitForChild("toPart")
     
@@ -651,7 +650,7 @@ GymTab:AddButton("TP to Master gym", function()
 end)
 
 -- TP to Stone Realm gym
-GymTab:AddButton("TP to Stone Realm gym", function()
+Tab:AddButton("TP to Stone Realm gym", function()
     local remote = game:GetService("ReplicatedStorage"):WaitForChild("RemotesEvent"):WaitForChild("PlayerMoveEvent")
     local target = workspace:WaitForChild("Doors"):WaitForChild("Stone Realm"):WaitForChild("Door"):WaitForChild("toPart")
     
@@ -659,8 +658,6 @@ GymTab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
-
--- Create a dedicated Credits Folder or Tab
 local CreditsTab = Window:CreateFolder("Credits")
 
 -- Adding the Credits
