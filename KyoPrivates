@@ -297,30 +297,33 @@ end)
 local TargetName = "" 
 local LoopKilling = false
 
--- 1. Fixed TextBox: Added placeholder text and ensured table formatting
 Tab:AddTextBox("Target Player Name", function(text)
     TargetName = text
-    print("Target set to: " .. TargetName) -- Helpful for debugging
 end, {
     ["placeholder"] = "Enter Username...",
     ["clear"] = false
 })
 
--- 2. The TP Kill Toggle
 Tab:AddSwitch("TP Kill Target", function(state)
     LoopKilling = state
     if LoopKilling then
         task.spawn(function()
             local localPlayer = game.Players.LocalPlayer
             while LoopKilling do
-                -- Use FindFirstChild to safely check if player exists
                 local target = game.Players:FindFirstChild(TargetName)
                 
                 if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
                    localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     
-                    -- Teleports you behind the target
+                    -- 1. Teleport to Target
                     localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                    
+                    -- 2. Auto Attack Logic
+                    -- This finds the tool you are currently holding
+                    local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        tool:Activate() -- Simulates a click/swing
+                    end
                 end
                 
                 task.wait(0.01) 
