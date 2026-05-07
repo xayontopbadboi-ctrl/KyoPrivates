@@ -668,4 +668,4 @@ CreditsTab:AddButton("Copy Discord Link", function()
 end)
 
 -- Initialize by showing the main tab
-Local Tab:Show()
+MainTab:Show()
