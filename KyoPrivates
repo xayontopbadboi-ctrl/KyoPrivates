@@ -2,8 +2,8 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memej
 
 local window = library:AddWindow("😡Kyo Privates Only😡", {
     main_color = Color3.fromRGB(0, 0, 0), -- Black theme as requested
-    min_size = Vector2.new(400, 300),
-    can_resize = false,
+    min_size = Vector2.new(500, 300),
+    can_resize = true,
 })
 
 local features = window:AddTab("Main💪") -- Name of tab
