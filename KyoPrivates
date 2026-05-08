@@ -653,7 +653,18 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
-local Credits = window:AddTab("Credits") -- Name of tab
+local CreditsTab = Window:AddTab("Credits")
 
-Credits:AddLabel("Kyo Private🖕")
-Credits:AddLabel("Developer By: Kyo")
+-- Add your labels/buttons here
+CreditsTab:AddLabel("--- Kyo Private ---")
+for i = 1, 15 do -- Adding enough items to force a scroll
+    CreditsTab:AddLabel("Dev credit " .. i)
+end
+
+-- Refresh Fix: This forces the window to recalculate size
+task.spawn(function()
+    CreditsTab:Show()
+    wait(0.5)
+    -- Manually bumping the size slightly can trigger the update
+    Window.min_size = Vector2.new(400, 301) 
+end)
