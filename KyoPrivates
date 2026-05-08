@@ -1,12 +1,21 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library//main/Library", true))()
-
 local window = library:AddWindow("😡Kyo Privates Only😡", {
     main_color = Color3.fromRGB(0, 0, 0), -- Black theme as requested
     min_size = Vector2.new(550, 450),
     can_resize = false,
 })
 
-local Tab = Window:AddTab("Settings") -- This creates the scrollable tab area
+-- 1. Create the tab
+local Tab = Window:AddTab("Settings")
+
+-- 2. ADD THIS LINE: Explicitly show the tab
+Tab:Show() 
+
+-- 3. Add your elements
+Tab:AddLabel("Settings Category")
+Tab:AddButton("Test Button", function()
+    print("Clicked!")
+end)
 
 local features = window:AddTab("Main💪") -- Name of tab
 features:Show() -- shows the tab
