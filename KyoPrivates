@@ -6,6 +6,8 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
     can_resize = false,
 })
 
+local Tab = Window:AddTab("Settings") -- This creates the scrollable tab area
+
 local features = window:AddTab("Main💪") -- Name of tab
 features:Show() -- shows the tab
 
