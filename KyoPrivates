@@ -5,18 +5,6 @@ local window = library:AddWindow("😡Kyo Privates Only😡", {
     can_resize = false,
 })
 
--- 1. Create the tab
-local Tab = Window:AddTab("Settings")
-
--- 2. ADD THIS LINE: Explicitly show the tab
-Tab:Show() 
-
--- 3. Add your elements
-Tab:AddLabel("Settings Category")
-Tab:AddButton("Test Button", function()
-    print("Clicked!")
-end)
-
 local features = window:AddTab("Main💪") -- Name of tab
 features:Show() -- shows the tab
 
