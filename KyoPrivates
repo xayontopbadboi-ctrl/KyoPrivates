@@ -653,13 +653,7 @@ Tab:AddButton("TP to Stone Realm gym", function()
     print("Teleported to Stone Realm")
 end)
 
-local CreditsTab = Window:AddTab("Credits")
+local CreditsTab = window:AddTab("Credits") -- Name of tab
 
--- Add your labels/buttons here
-CreditsTab:AddLabel("--- Kyo Private ---")
-for i = 1, 15 do -- Adding enough items to force a scroll
-    CreditsTab:AddLabel("Dev credit " .. i)
-end
-
-    CreditsTab:Show()
-    
+CreditsTab:AddLabel("Kyo Private🙊")
+CreditsTab:AddLabel("👑Developer By: Kyo👑")
